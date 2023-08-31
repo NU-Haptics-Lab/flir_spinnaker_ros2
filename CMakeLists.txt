@@ -50,9 +50,9 @@ include_directories("${CUDA_INCLUDE_DIRS}")
 
 
 ################ FFMPEG Stuff ################
-set(FFMPEG_PKGCONFIG "/home/nuc-haptics/ffmpeg_build/lib/pkgconfig" CACHE STRING "ffmpeg_pkgconfig string")
-set(CMAKE_INSTALL_RPATH "/home/nuc-haptics/ffmpeg_build/lib")
-# set(FFMPEG_PKGCONFIG "" CACHE STRING "extra path to pkgconfig")
+#set(FFMPEG_PKGCONFIG "/home/nuc-haptics/ffmpeg_build/lib/pkgconfig" CACHE STRING "ffmpeg_pkgconfig string")
+#set(CMAKE_INSTALL_RPATH "/home/nuc-haptics/ffmpeg_build/lib")
+set(FFMPEG_PKGCONFIG "" CACHE STRING "extra path to pkgconfig")
 if("${FFMPEG_PKGCONFIG}" STREQUAL "")
 else()
   message(WARNING "using FFMPEG package from ${FFMPEG_PKGCONFIG}")

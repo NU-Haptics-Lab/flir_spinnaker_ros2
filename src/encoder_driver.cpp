@@ -474,7 +474,7 @@ void CameraDriver::publishImage(const ImageConstPtr & im)
 
 void CameraDriver::packetReady(const ffmpeg_image_transport::FFMPEGPacketConstPtr & pkt){
     // publish the packet
-    RCLCPP_INFO(this->get_logger(), "publishing packet");
+    // RCLCPP_INFO(this->get_logger(), "publishing packet");
     packetPub_->publish(*pkt);
 }
 
