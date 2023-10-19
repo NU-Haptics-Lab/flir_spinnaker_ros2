@@ -28,6 +28,8 @@
 #include <map>
 #include <memory>
 #include <rclcpp/rclcpp.hpp>
+#include "tf2_ros/transform_listener.h"
+#include "tf2_ros/buffer.h"
 #include <sensor_msgs/msg/camera_info.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <std_msgs/msg/float64.hpp>
@@ -84,7 +86,7 @@ private:
   image_transport::CameraPublisher pub_;
   rclcpp::Publisher<image_meta_msgs_ros2::msg::ImageMetaData>::SharedPtr
     metaPub_;
-  rclcpp::Publisher<ffmpeg_image_transport_msgs::msg::FFMPEGPacket>::SharedPtr
+  rclcpp::Publisher<ffmpeg_image_transport_msgs::msg::FFMPEGTransform>::SharedPtr
     packetPub_;
   std::string serial_;
   std::string cameraInfoURL_;
@@ -129,7 +131,9 @@ private:
   // encoder stuff
   ffmpeg_image_transport::FFMPEGEncoder* encoder;
   bool is_init_encoder{false};
-void packetReady(const ffmpeg_image_transport::FFMPEGPacketConstPtr & pkt);
+  std::shared_ptr<tf2_ros::TransformListener> tf_listener_{nullptr};
+  std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+  void packetReady(const ffmpeg_image_transport::FFMPEGPacketConstPtr & pkt);
 };
 }  // namespace flir_spinnaker_ros2
 #endif  // FLIR_SPINNAKER_ROS2__CAMERA_DRIVER_H_

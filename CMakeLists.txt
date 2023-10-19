@@ -31,6 +31,7 @@ set(ROS2_DEPENDENCIES
   "image_meta_msgs_ros2"
   "camera_control_msgs_ros2"
   "OpenCV"
+  "tf2_ros"
 )
 
 # find dependencies
@@ -91,7 +92,6 @@ ament_auto_add_executable(encoder_driver_node
 
 rclcpp_components_register_nodes(camera_driver "flir_spinnaker_ros2::CameraDriver")
 # rclcpp_components_register_nodes(encoder_driver "flir_spinnaker_ros2::EncoderDriver") # don't need this, should be able to run it using the encoder_driver_node
-
 
 target_include_directories(camera_driver PRIVATE include)
 target_include_directories(encoder_driver PRIVATE include)

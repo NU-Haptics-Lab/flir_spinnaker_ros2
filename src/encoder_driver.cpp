@@ -113,6 +113,7 @@ CameraDriver::NodeInfo::NodeInfo(
   }
 }
 
+// constructor
 CameraDriver::CameraDriver(const rclcpp::NodeOptions & options)
 : Node("encoderdriver", options)
 {
@@ -125,6 +126,10 @@ CameraDriver::CameraDriver(const rclcpp::NodeOptions & options)
     LOG_ERROR("startup failed!");
     throw std::runtime_error("startup of EncoderDriver node failed!");
   }
+
+  // tf2
+  tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
+  tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
 
   // make the encoder
   encoder = new ffmpeg_image_transport::FFMPEGEncoder();
@@ -475,7 +480,16 @@ void CameraDriver::publishImage(const ImageConstPtr & im)
 void CameraDriver::packetReady(const ffmpeg_image_transport::FFMPEGPacketConstPtr & pkt){
     // publish the packet
     // RCLCPP_INFO(this->get_logger(), "publishing packet");
-    packetPub_->publish(*pkt);
+    ffmpeg_image_transport_msgs::msg::FFMPEGTransform msg;
+    msg.packet = *pkt;
+    geometry_msgs::msg::TransformStamped tfs;
+    try{
+      tfs = tf_buffer_->lookupTransform("cmd/avatar_task_ws", "cmd/neck_cam_assm", pkt->header.stamp);
+    } catch (const tf2::TransformException & ex){
+      return;
+    }
+    msg.transform = tfs.transform;
+    packetPub_->publish(msg);
 }
 
 void CameraDriver::run()
@@ -626,7 +640,7 @@ bool CameraDriver::start()
   metaPub_ =
     create_publisher<image_meta_msgs_ros2::msg::ImageMetaData>("~/meta", 1);
   packetPub_ =
-    create_publisher<ffmpeg_image_transport_msgs::msg::FFMPEGPacket>("~/image_raw/ffmpeg_fast", 1);
+    create_publisher<ffmpeg_image_transport_msgs::msg::FFMPEGTransform>("~/image_raw/ffmpeg_fast", 1);
 
   cameraInfoMsg_ = infoManager_->getCameraInfo();
   imageMsg_.header.frame_id = frameId_;
