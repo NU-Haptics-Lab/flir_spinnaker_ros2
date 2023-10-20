@@ -482,13 +482,15 @@ void CameraDriver::packetReady(const ffmpeg_image_transport::FFMPEGPacketConstPt
     // RCLCPP_INFO(this->get_logger(), "publishing packet");
     ffmpeg_image_transport_msgs::msg::FFMPEGTransform msg;
     msg.packet = *pkt;
-    geometry_msgs::msg::TransformStamped tfs;
+    geometry_msgs::msg::TransformStamped tfs_left, tfs_right;
     try{
-      tfs = tf_buffer_->lookupTransform("cmd/avatar_task_ws", "cmd/neck_cam_assm", pkt->header.stamp);
+      tfs_left = tf_buffer_->lookupTransform("cmd/avatar_task_ws", "cmd/neck_cam_left_eye", pkt->header.stamp);
+      tfs_right = tf_buffer_->lookupTransform("cmd/avatar_task_ws", "cmd/neck_cam_right_eye", pkt->header.stamp);
     } catch (const tf2::TransformException & ex){
       return;
     }
-    msg.transform = tfs.transform;
+    msg.left_transform = tfs_left.transform;
+    msg.right_transform = tfs_right.transform;
     packetPub_->publish(msg);
 }
 
@@ -718,3 +720,4 @@ bool CameraDriver::start()
 }  // namespace flir_spinnaker_ros2
 
 RCLCPP_COMPONENTS_REGISTER_NODE(flir_spinnaker_ros2::CameraDriver)
+
