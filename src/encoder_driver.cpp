@@ -484,9 +484,10 @@ void CameraDriver::packetReady(const ffmpeg_image_transport::FFMPEGPacketConstPt
     msg.packet = *pkt;
     geometry_msgs::msg::TransformStamped tfs_left, tfs_right;
     try{
-      tfs_left = tf_buffer_->lookupTransform("cmd/avatar_task_ws", "cmd/neck_cam_left_eye", pkt->header.stamp);
-      tfs_right = tf_buffer_->lookupTransform("cmd/avatar_task_ws", "cmd/neck_cam_right_eye", pkt->header.stamp);
+      tfs_left = tf_buffer_->lookupTransform("cmd/avatar_task_ws", "cmd/neck_cam_left_eye", pkt->header.stamp, chrono::duration<double>(0.1));
+      tfs_right = tf_buffer_->lookupTransform("cmd/avatar_task_ws", "cmd/neck_cam_right_eye", pkt->header.stamp, chrono::duration<double>(0.1));
     } catch (const tf2::TransformException & ex){
+      RCLCPP_INFO(this->get_logger(), "no transform");
       return;
     }
     msg.left_transform = tfs_left.transform;
